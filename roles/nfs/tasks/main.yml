@@ -1,0 +1,48 @@
+---
+# tasks file for nfs
+- name: 'Install pcakges'
+  yum:
+    name:
+      - nano
+      - nfs-utils
+
+- name: 'Disable SElinux'
+  shell: setenforce 0 && sed -i 's/^SELINUX=.*/SELINUX=disabled/g' /etc/selinux/config
+
+- name: 'Create a new primary partition'
+  parted:
+    device: /dev/sdb
+    number: 1
+    state: present
+
+- name: 'Create a ext4 filesystem on sdb1'
+  filesystem:
+    fstype: ext4
+    dev: /dev/sdb1
+
+- name: 'Create folder for nfs'
+  file:
+    path: /mnt/nfs
+    owner: nfsnobody
+    group: nfsnobody
+    mode: 0777
+    recurse: yes
+    state: directory
+
+- name: 'Mount disk'
+  mount:
+    path: /mnt/nfs
+    src: /dev/sdb1
+    fstype: ext4
+    state: mounted
+
+- name: 'Edit exports file'
+  blockinfile:
+    path: /etc/exports
+    block: |
+      /mnt/nfs           192.168.11.0/24(rw,sync,no_root_squash,no_subtree_check)
+  notify:
+    - restart rpcbind
+    - restart nfs-server
+
+

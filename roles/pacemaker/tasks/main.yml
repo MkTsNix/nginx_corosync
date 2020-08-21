@@ -1,0 +1,38 @@
+---
+# tasks file for pacemaker
+- name: 'Edit /etc/hosts.yml'
+  template:
+    src: hosts.j2
+    dest: /etc/hosts
+
+- name: 'Install pacemaker'
+  yum:
+    name:
+      - nano
+      - pacemaker
+      - pcs
+
+- name: 'Autostart pacemaker'
+  systemd:
+    name: pacemaker
+    enabled: yes
+
+- name: 'Autostart corosync'
+  systemd:
+    name: corosync
+    enabled: yes
+
+- name: 'Autostart pcsd'
+  systemd:
+    name: pcsd
+    state: started
+    enabled: yes
+
+- name: 'Change password for hacluster user'
+  shell: echo -e "hacluster\nhacluster" | passwd hacluster
+
+- name: 'Start script for create cluster'
+  script: create_cluster.sh
+  when: ansible_hostname=='node1'
+
+

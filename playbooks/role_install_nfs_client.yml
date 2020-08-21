@@ -1,0 +1,9 @@
+---
+ - name: 'Install and configure NFS server'
+   hosts: pcs
+   become: true
+   gather_facts: true
+   vars:
+
+   roles:
+     - nfs-client

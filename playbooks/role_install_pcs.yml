@@ -1,0 +1,9 @@
+---
+ - name: 'Install nginx'
+   hosts: pcs
+   become: true
+   gather_facts: true
+   vars:
+
+   roles:
+     - pacemaker

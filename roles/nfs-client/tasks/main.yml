@@ -1,0 +1,30 @@
+---
+# tasks file for nfs-client
+- name: 'Install nfs-client'
+  yum:
+    name: nfs-utils
+
+- name: 'Start rpcbind'
+  systemd:
+    name: rpcbind
+    state: restarted
+    enabled: yes
+
+- name: 'Create dir for nfs mount'
+  file:
+    path: /opt/nfsmount/
+    recurse: yes
+    state: directory
+    mode: 0777
+
+- name: 'Mount nfs'
+  mount:
+        path: /opt/nfsmount
+        fstype: nfs
+        src: 192.168.11.84:/mnt/nfs
+        state: mounted
+
+
+
+
+

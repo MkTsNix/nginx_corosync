@@ -1,0 +1,30 @@
+---
+# tasks file for nginx
+- name: 'Add epel-release'
+  yum:
+    name: epel-release
+    state: present
+
+- name: 'Disable SElinux'
+  shell: setenforce 0 && sed -i 's/^SELINUX=.*/SELINUX=disabled/g' /etc/selinux/config
+
+- name: 'Install nginx'
+  yum:
+    name: nginx
+    state: present
+#  notify:
+#    - restart nginx
+#
+#- name: 'Edit nginx start web page'
+#  shell: echo "<h1>Web - {{ ansible_hostname }}</h1>" > /usr/share/nginx/html/index.html
+
+- name: 'Config nginx from template'
+  template:
+    src: nginx.conf_for_nfs.j2
+    dest: /etc/nginx/nginx.conf
+  notify:
+    - restart nginx
+
+
+- name: 'Edit nginx start web page'
+  shell: echo "<h1>Web on nfs mount</h1>" > /opt/nfsmount/index.html
